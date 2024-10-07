@@ -128,7 +128,7 @@
         </div>
       </div>
     </div>
-    <script src="./Files/IGB1.13.0/instant-games-bridge.js"></script>
+    <script src="./Files/IGB1.12.0/instant-games-bridge.js"></script>
     <script>
       var canvas = document.querySelector("#canvas");
       var loading_bg = document.querySelector(".loading_bg");
@@ -460,14 +460,14 @@
                     }
 
                     let unityLoader = document.createElement('script')
-                    unityLoader.src = 'Build/fasd.loader.js'
+                    unityLoader.src = 'Build/parachutist.loader.js'
                     unityLoader.onload = () => {
                         createUnityInstance(
                             canvas,
                             {
-                                dataUrl: 'Build/7524ca9e5aec1cef7ca6d82543cb08e9.data.unityweb',
-                                frameworkUrl: 'Build/ad0ddb12470217f34ff1803685dd6a49.js.unityweb',
-                                codeUrl: 'Build/95b3b165b8a7315def4b6fa96a8b2dcc.wasm.unityweb',
+                                dataUrl: 'Build/7cad2143762a2b46585af18fd987e842.data.unityweb',
+                                frameworkUrl: 'Build/27d658a75af05a99178b8740ab925d67.js.unityweb',
+                                codeUrl: 'Build/6d8b5c275bd2f0dea71c51e9940c48f2.wasm.unityweb',
                                 streamingAssetsUrl: 'StreamingAssets',
                                 companyName: 'RedStar',
                                 productName: 'Fallschirmspringer',
@@ -679,6 +679,11 @@
       }
 
       window.setMinimumDelayBetweenInterstitial = function(options) {
+          if (options) {
+            options = JSON.parse(options)
+          } else {
+            options = { }
+          }
                 
           bridge.advertisement.setMinimumDelayBetweenInterstitial(options)
       }
@@ -713,8 +718,12 @@
                 bridge.advertisement.hideBanner()
       }
 
-            window.showInterstitial = function() {
-                bridge.advertisement.showInterstitial()
+      	    window.showInterstitial = function(options) {
+                if (options) {
+                    options = JSON.parse(options)
+                }
+
+                bridge.advertisement.showInterstitial(options)
             }
 
             window.showRewarded = function() {
@@ -768,12 +777,8 @@
                     })
             }
 
-            window.inviteFriends = function(options) {
-                if (options) {
-                    options = JSON.parse(options)
-                }
-                
-                bridge.social.inviteFriends(options)
+            window.inviteFriends = function() {
+                bridge.social.inviteFriends()
                     .then(() => {
                         sendMessageToUnity('OnInviteFriendsCompleted', 'true')
                     })
@@ -850,6 +855,9 @@
                 return bridge.leaderboard.isNativePopupSupported.toString()
             }
 
+            window.getIsLeaderboardMultipleBoardsSupported = function() {
+                return bridge.leaderboard.isMultipleBoardsSupported.toString()
+            }
 
             window.getIsLeaderboardSetScoreSupported = function() {
                 return bridge.leaderboard.isSetScoreSupported.toString()
@@ -939,12 +947,8 @@
                 return bridge.payments.isSupported.toString()
             }
 
-            window.paymentsPurchase = function(options) {
-                if (options) {
-                    options = JSON.parse(options)
-                }
-                
-                bridge.payments.purchase(options)
+            window.paymentsPurchase = function(purchaseId) {
+                bridge.payments.purchase(purchaseId)
                     .then(() => {
                         sendMessageToUnity('OnPaymentsPurchaseCompleted', 'true')
                     })
@@ -953,12 +957,8 @@
                     })
             }
 
-            window.paymentsConsumePurchase = function(options) {
-                if (options) {
-                    options = JSON.parse(options)
-                }
-                
-                bridge.payments.consumePurchase(options)
+            window.paymentsConsumePurchase = function(purchaseToken) {
+                bridge.payments.consumePurchase(purchaseToken)
                     .then(() => {
                         sendMessageToUnity('OnPaymentsConsumePurchaseCompleted', 'true')
                     })
@@ -1015,6 +1015,8 @@
             window.remoteConfigGet = function(options) {
                 if (options) {
                     options = JSON.parse(options)
+                } else {
+                    options = { clientFeatures: [] }
                 }
 
                 bridge.remoteConfig.get(options)
